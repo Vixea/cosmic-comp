@@ -53,6 +53,7 @@ use smithay::{
         compositor::{CompositorClientState, CompositorState},
         data_device::DataDeviceState,
         dmabuf::{DmabufFeedback, DmabufState},
+        input_method::InputMethodManagerState,
         keyboard_shortcuts_inhibit::KeyboardShortcutsInhibitState,
         output::OutputManagerState,
         presentation::PresentationState,
@@ -60,7 +61,9 @@ use smithay::{
         seat::WaylandFocus,
         shell::{kde::decoration::KdeDecorationState, xdg::decoration::XdgDecorationState},
         shm::ShmState,
+        text_input::TextInputManagerState,
         viewporter::ViewporterState,
+        virtual_keyboard::VirtualKeyboardManagerState,
     },
 };
 use tracing::error;
@@ -261,6 +264,9 @@ impl State {
         let wl_drm_state = WlDrmState;
         let kde_decoration_state = KdeDecorationState::new::<Self>(&dh, Mode::Client);
         let xdg_decoration_state = XdgDecorationState::new::<Self>(&dh);
+        InputMethodManagerState::new::<Self>(&dh);
+        TextInputManagerState::new::<Self>(&dh);
+        VirtualKeyboardManagerState::new::<State, _>(&dh, |_client| true);
 
         let shell = Shell::new(&config, dh);
 

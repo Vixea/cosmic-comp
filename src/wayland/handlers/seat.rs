@@ -10,7 +10,7 @@ use smithay::{
     reexports::wayland_server::Resource,
     wayland::{
         data_device::set_data_device_focus, primary_selection::set_primary_focus,
-        seat::WaylandFocus,
+        seat::WaylandFocus, text_input::TextInputHandle,
     },
 };
 use std::cell::RefCell;
@@ -46,7 +46,12 @@ impl SeatHandler for State {
             .and_then(|s| dh.get_client(s.id()).ok())
         {
             set_data_device_focus(dh, seat, Some(client.clone()));
-            set_primary_focus(dh, seat, Some(client))
+            set_primary_focus(dh, seat, Some(client));
+
+            if let Some(text_input) = seat.user_data().get::<TextInputHandle>() {
+                let surface = focused.and_then(WaylandFocus::wl_surface);
+                text_input.set_focus(surface.as_ref(), || {});
+            }
         }
     }
 }

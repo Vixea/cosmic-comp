@@ -64,6 +64,7 @@ use smithay::{
     utils::{IsAlive, Logical, Physical, Point, Rectangle, Scale, Size},
     wayland::{
         dmabuf::get_dmabuf,
+        input_method::InputMethodSeat,
         shell::wlr_layer::Layer,
         shm::{shm_format_to_fourcc, with_buffer_contents},
     },
@@ -403,6 +404,23 @@ where
             .map(Into::into),
     );
 
+    for seat in state.seats() {
+        let input_method = seat.input_method();
+        let rectangle = input_method.coordinates();
+        let position = Point::from((
+            rectangle.loc.x + rectangle.size.w,
+            rectangle.loc.y + rectangle.size.h,
+        ));
+        input_method.with_surface(|surface| {
+            elements.extend(AsRenderElements::<R>::render_elements::<WorkspaceRenderElement<R>>(
+                &smithay::desktop::space::SurfaceTree::from_surface(surface),
+                renderer,
+                position.to_physical_precise_round(output_scale),
+                Scale::from(output_scale),
+                1.0,
+            ).into_iter().map(Into::into));
+        });
+    }
     let offset = match previous.as_ref() {
         Some((previous, previous_idx, start)) => {
             let layout = state.config.static_conf.workspace_layout;
