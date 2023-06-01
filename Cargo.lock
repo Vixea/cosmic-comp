@@ -614,8 +614,7 @@ dependencies = [
 [[package]]
 name = "cosmic-time"
 version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "269b94889f152389ed39fde8a69a6083ff4ca73993360d2850d5c281e3488c11"
+source = "git+https://github.com/pop-os/cosmic-time?branch=libcosmic#2daeb71350cb41489f44ba21f0ba98acf8128f9b"
 dependencies = [
  "iced 0.9.0",
  "iced_core 0.9.0",
